@@ -17,6 +17,11 @@ export function App() {
 
   // Give tests a way to get prosemirror instance
   (window as WindowWithProseMirror).ProseMirror = editor?._tiptapEditor;
+  const value = async () => {
+    const res = await editor.tryParseMarkdownToBlocks("123\n\n123");
+    console.log(res);
+  };
+  console.log(value());
 
   return <BlockNoteView className="root" editor={editor} />;
 }

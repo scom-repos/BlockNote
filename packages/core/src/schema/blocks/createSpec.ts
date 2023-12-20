@@ -15,10 +15,33 @@ import {
   BlockSchemaWithBlock,
   PartialBlockFromConfig,
 } from "./types";
+import {
+  CanCommands,
+  ChainedCommands,
+  ExtendedRegExpMatchArray,
+  PasteRule,
+  PasteRuleFinder,
+  SingleCommands,
+} from "@tiptap/core";
+import { EditorState } from "prosemirror-state";
 
 // restrict content to "inline" and "none" only
 export type CustomBlockConfig = BlockConfig & {
   content: "inline" | "none";
+};
+
+type PasteRuleConfig = {
+  find: PasteRuleFinder;
+  handler: (props: {
+    can: () => CanCommands;
+    chain: () => ChainedCommands;
+    commands: SingleCommands;
+    dropEvent: DragEvent;
+    match: ExtendedRegExpMatchArray;
+    pasteEvent: ClipboardEvent;
+    range: Range;
+    state: EditorState;
+  }) => void | null;
 };
 
 export type CustomBlockImplementation<
@@ -59,6 +82,10 @@ export type CustomBlockImplementation<
   parse?: (
     el: HTMLElement
   ) => PartialBlockFromConfig<T, I, S>["props"] | undefined;
+
+  parseFn?: () => any[];
+
+  pasteRules?: PasteRuleConfig[];
 };
 
 // Function that uses the 'parse' function of a blockConfig to create a
@@ -132,7 +159,9 @@ export function createBlockSpec<
     },
 
     parseHTML() {
-      return getParseRules(blockConfig, blockImplementation.parse);
+      return blockImplementation.parseFn
+        ? blockImplementation.parseFn()
+        : getParseRules(blockConfig, blockImplementation.parse);
     },
 
     renderHTML() {
@@ -171,6 +200,21 @@ export function createBlockSpec<
           blockContentDOMAttributes
         );
       };
+    },
+
+    addPasteRules() {
+      if (!blockImplementation.pasteRules) {
+        return [];
+      }
+
+      return blockImplementation.pasteRules.map((rule) => {
+        return new PasteRule({
+          find: rule.find,
+          handler(props: any) {
+            rule.handler(props);
+          },
+        });
+      });
     },
   });
 

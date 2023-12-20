@@ -27,8 +27,9 @@ export class FormattingToolbarView {
     state: EditorState;
     from: number;
     to: number;
-  }) => boolean = ({ state }) => !state.selection.empty;
-
+  }) => boolean = ({ state }) => {
+    return !state.selection.empty && !isNodeSelection(state.selection);
+  };
   constructor(
     private readonly editor: BlockNoteEditor<
       BlockSchema,
