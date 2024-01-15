@@ -12,16 +12,17 @@ export function App() {
         "data-test": "editor",
       },
     },
+    onEditorContentChange: async (editor) => {
+      console.log(editor.topLevelBlocks);
+      editor.topLevelBlocks.pop();
+      const md = await editor.blocksToMarkdownLossy(editor.topLevelBlocks);
+      console.log("mardown", { value: md });
+    },
     uploadFile: uploadToTmpFilesDotOrg_DEV_ONLY,
   });
 
   // Give tests a way to get prosemirror instance
   (window as WindowWithProseMirror).ProseMirror = editor?._tiptapEditor;
-  const value = async () => {
-    const res = await editor.tryParseMarkdownToBlocks("123\n\n123");
-    console.log(res);
-  };
-  console.log(value());
 
   return <BlockNoteView className="root" editor={editor} />;
 }

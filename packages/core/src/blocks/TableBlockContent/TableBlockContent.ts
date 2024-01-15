@@ -42,7 +42,7 @@ export const TableBlockContent = createStronglyTypedTiptapNode({
 const TableParagraph = Node.create({
   name: "tableParagraph",
   group: "tableContent",
-  content: "inline*",
+  content: "blockContainer+",
 
   parseHTML() {
     return [{ tag: "p" }];

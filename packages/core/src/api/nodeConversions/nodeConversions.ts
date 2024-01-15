@@ -174,12 +174,27 @@ export function tableContentToNodes<
     for (const cell of row.cells) {
       let pNode: Node;
       if (!cell) {
-        pNode = schema.nodes["tableParagraph"].create({});
+        const contentNode = schema.nodes["paragraph"].create({});
+        const containerNode = schema.nodes["blockContainer"].create(
+          {},
+          contentNode
+        );
+        pNode = schema.nodes["tableParagraph"].create({}, containerNode);
       } else if (typeof cell === "string") {
-        pNode = schema.nodes["tableParagraph"].create({}, schema.text(cell));
+        // pNode = schema.nodes["tableParagraph"].create({}, schema.text(cell));
+        const contentNode = schema.nodes["paragraph"].create(
+          {},
+          schema.text(cell)
+        );
+        const containerNode = schema.nodes["blockContainer"].create(
+          {},
+          contentNode
+        );
+        pNode = schema.nodes["tableParagraph"].create({}, containerNode);
       } else {
-        const textNodes = inlineContentToNodes(cell, schema, styleSchema);
-        pNode = schema.nodes["tableParagraph"].create({}, textNodes);
+        // const textNodes = inlineContentToNodes(cell, schema, styleSchema);
+        const blockNode = blockToNode(cell, schema, styleSchema);
+        pNode = schema.nodes["tableParagraph"].create({}, blockNode);
       }
 
       const cellNode = schema.nodes["tableCell"].create({}, pNode);
@@ -271,27 +286,52 @@ export function blockToNode(
  * Converts an internal (prosemirror) table node contentto a BlockNote Tablecontent
  */
 function contentNodeToTableContent<
+  BSchema extends BlockSchema,
   I extends InlineContentSchema,
   S extends StyleSchema
->(contentNode: Node, inlineContentSchema: I, styleSchema: S) {
-  const ret: TableContent<I, S> = {
+>(
+  contentNode: Node,
+  blockSchema: BSchema,
+  inlineContentSchema: I,
+  styleSchema: S,
+  blockCache?: WeakMap<Node, Block<BSchema, I, S>>
+) {
+  const ret: TableContent<BSchema, I, S> = {
     type: "tableContent",
     rows: [],
   };
 
   contentNode.content.forEach((rowNode) => {
-    const row: TableContent<I, S>["rows"][0] = {
+    const row: TableContent<BSchema, I, S>["rows"][0] = {
       cells: [],
     };
 
     rowNode.content.forEach((cellNode) => {
-      row.cells.push(
-        contentNodeToInlineContent(
-          cellNode.firstChild!,
-          inlineContentSchema,
-          styleSchema
-        )
-      );
+      // TODO: check
+      if (cellNode?.content) {
+        const contentBlocks: any = [];
+        cellNode.content.forEach((node) => {
+          node.content.forEach((childNode) => {
+            const block = nodeToBlock(
+              childNode,
+              blockSchema,
+              inlineContentSchema,
+              styleSchema,
+              blockCache
+            );
+            contentBlocks.push(block);
+          });
+        });
+        row.cells.push(contentBlocks);
+      }
+
+      // row.cells.push(
+      //   contentNodeToInlineContent(
+      //     cellNode.firstChild!,
+      //     inlineContentSchema,
+      //     styleSchema
+      //   )
+      // );
     });
 
     ret.rows.push(row);
@@ -624,8 +664,10 @@ export function nodeToBlock<
   } else if (blockConfig.content === "table") {
     content = contentNodeToTableContent(
       blockInfo.contentNode,
+      blockSchema,
       inlineContentSchema,
-      styleSchema
+      styleSchema,
+      blockCache
     );
   } else if (blockConfig.content === "none") {
     content = undefined;

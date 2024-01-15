@@ -108,12 +108,13 @@ export type BlockSchemaWithBlock<
 };
 
 export type TableContent<
+  BSchema extends BlockSchema,
   I extends InlineContentSchema,
   S extends StyleSchema = StyleSchema
 > = {
   type: "tableContent";
   rows: {
-    cells: InlineContent<I, S>[][];
+    cells: Block<BSchema, I, S>[][];
   }[];
 };
 
@@ -131,7 +132,7 @@ export type BlockFromConfigNoChildren<
   content: B["content"] extends "inline"
     ? InlineContent<I, S>[]
     : B["content"] extends "table"
-    ? TableContent<I, S>
+    ? TableContent<BlockSchema, I, S>
     : B["content"] extends "none"
     ? undefined
     : never;
@@ -188,7 +189,7 @@ export type PartialTableContent<
 > = {
   type: "tableContent";
   rows: {
-    cells: PartialInlineContent<I, S>[];
+    cells: PartialBlock<any, I, S>[];
   }[];
 };
 
