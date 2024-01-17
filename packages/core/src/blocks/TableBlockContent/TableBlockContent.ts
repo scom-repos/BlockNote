@@ -45,12 +45,12 @@ const TableParagraph = Node.create({
   content: "blockContainer+",
 
   parseHTML() {
-    return [{ tag: "p" }];
+    return [{ tag: "div" }];
   },
 
   renderHTML({ HTMLAttributes }) {
     return [
-      "p",
+      "div",
       mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
       0,
     ];

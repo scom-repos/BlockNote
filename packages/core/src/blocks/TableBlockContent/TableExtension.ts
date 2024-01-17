@@ -18,14 +18,25 @@ export const TableExtension = Extension.create({
     return {
       // Makes enter create a new line within the cell.
       Enter: () => {
-        if (
-          this.editor.state.selection.empty &&
-          this.editor.state.selection.$head.parent.type.name ===
-            "tableParagraph"
-        ) {
-          this.editor.commands.setHardBreak();
-          return true;
-        }
+        // const { node } = getBlockInfoFromPos(
+        //   this.editor.state.doc,
+        //   this.editor.state.selection.from
+        // )!;
+        // const currentEl = this.editor.view.domAtPos(
+        //   this.editor.state.selection.from
+        // ).node as Element;
+        // if (currentEl.tagName === "TD") {
+        //   this.editor.commands.setHardBreak();
+        //   return true;
+        // }
+        // if (
+        //   this.editor.state.selection.empty &&
+        //   this.editor.state.selection.$head.parent.type.name ===
+        //     "tableParagraph"
+        // ) {
+        //   this.editor.commands.setHardBreak();
+        //   return true;
+        // }
 
         return false;
       },

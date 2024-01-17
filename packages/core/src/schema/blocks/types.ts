@@ -189,7 +189,7 @@ export type PartialTableContent<
 > = {
   type: "tableContent";
   rows: {
-    cells: PartialBlock<any, I, S>[];
+    cells: PartialBlock<any, I, S>[][];
   }[];
 };
 

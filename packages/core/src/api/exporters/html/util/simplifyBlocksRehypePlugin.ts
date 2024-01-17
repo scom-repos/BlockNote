@@ -25,6 +25,7 @@ export function simplifyBlocks(options: SimplifyBlocksOptions) {
     // Checks whether blocks in the tree are wrapped by a parent `blockGroup`
     // element, in which case the `blockGroup`'s children are lifted out, and it
     // is removed.
+
     if (
       tree.children.length === 1 &&
       (tree.children[0] as HASTElement).properties?.["dataNodeType"] ===
@@ -42,6 +43,25 @@ export function simplifyBlocks(options: SimplifyBlocksOptions) {
       const blockOuter = tree.children[i] as HASTElement;
       const blockContainer = blockOuter.children[0] as HASTElement;
       const blockContent = blockContainer.children[0] as HASTElement;
+      const blockContentType = blockContent.properties!["dataContentType"];
+      if (blockContentType === "table") {
+        const tboby = (blockContent.children[0] as HASTElement)
+          ?.children[0] as HASTElement;
+        if (tboby) {
+          for (const tr of tboby.children) {
+            const row = tr as HASTElement;
+            for (const td of row.children) {
+              const col = td as HASTElement;
+              for (const cell of col.children) {
+                const c = cell as HASTElement;
+                simplifyBlocksHelper(c);
+              }
+            }
+          }
+        }
+        continue;
+      }
+
       const blockGroup =
         blockContainer.children.length === 2
           ? (blockContainer.children[1] as HASTElement)
@@ -119,7 +139,9 @@ export function simplifyBlocks(options: SimplifyBlocksOptions) {
         numChildElements += numElementsAdded;
       } else {
         // Replaces the block with only the content inside it.
-        tree.children[i] = blockContent.children[0];
+        if (blockContent.children[0]) {
+          tree.children[i] = blockContent.children[0];
+        }
       }
     }
 

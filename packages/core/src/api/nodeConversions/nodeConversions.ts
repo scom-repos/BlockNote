@@ -181,7 +181,6 @@ export function tableContentToNodes<
         );
         pNode = schema.nodes["tableParagraph"].create({}, containerNode);
       } else if (typeof cell === "string") {
-        // pNode = schema.nodes["tableParagraph"].create({}, schema.text(cell));
         const contentNode = schema.nodes["paragraph"].create(
           {},
           schema.text(cell)
@@ -192,9 +191,12 @@ export function tableContentToNodes<
         );
         pNode = schema.nodes["tableParagraph"].create({}, containerNode);
       } else {
-        // const textNodes = inlineContentToNodes(cell, schema, styleSchema);
-        const blockNode = blockToNode(cell, schema, styleSchema);
-        pNode = schema.nodes["tableParagraph"].create({}, blockNode);
+        const nodes = [];
+        for (const content of cell) {
+          const node = blockToNode(content, schema, styleSchema);
+          nodes.push(node);
+        }
+        pNode = schema.nodes["tableParagraph"].create({}, nodes);
       }
 
       const cellNode = schema.nodes["tableCell"].create({}, pNode);
@@ -307,7 +309,6 @@ function contentNodeToTableContent<
     };
 
     rowNode.content.forEach((cellNode) => {
-      // TODO: check
       if (cellNode?.content) {
         const contentBlocks: any = [];
         cellNode.content.forEach((node) => {

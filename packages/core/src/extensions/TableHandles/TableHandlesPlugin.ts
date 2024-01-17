@@ -327,7 +327,7 @@ export class TableHandlesView<
         type: "tableContent",
         rows: rows,
       },
-    } as PartialBlock<BSchema, I, S>);
+    } as unknown as PartialBlock<BSchema, I, S>);
   };
 
   scrollHandler = () => {

@@ -168,10 +168,48 @@ export const getDefaultSlashMenuItems = <
             type: "tableContent",
             rows: [
               {
-                cells: ["", "", ""],
+                cells: [
+                  [
+                    {
+                      type: "paragraph",
+                      content: [{ type: "text", text: "", styles: {} }],
+                    },
+                  ],
+                  [
+                    {
+                      type: "paragraph",
+                      content: [{ type: "text", text: "", styles: {} }],
+                    },
+                  ],
+                  [
+                    {
+                      type: "paragraph",
+                      content: [{ type: "text", text: "", styles: {} }],
+                    },
+                  ],
+                ],
               },
               {
-                cells: ["", "", ""],
+                cells: [
+                  [
+                    {
+                      type: "paragraph",
+                      content: [{ type: "text", text: "", styles: {} }],
+                    },
+                  ],
+                  [
+                    {
+                      type: "paragraph",
+                      content: [{ type: "text", text: "", styles: {} }],
+                    },
+                  ],
+                  [
+                    {
+                      type: "paragraph",
+                      content: [{ type: "text", text: "", styles: {} }],
+                    },
+                  ],
+                ],
               },
             ],
           },
