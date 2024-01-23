@@ -1,4 +1,4 @@
-import { InputRule } from "@tiptap/core";
+import { Editor, InputRule, PasteRule } from "@tiptap/core";
 import {
   PropSchema,
   createBlockSpecFromStronglyTypedTiptapNode,
@@ -6,6 +6,16 @@ import {
 } from "../../schema";
 import { createDefaultBlockDOMOutputSpec } from "../defaultBlockHelpers";
 import { defaultProps } from "../defaultProps";
+import { markdownToBlocks } from "../../api/parsers/markdown/parseMarkdown";
+import { getNodeById } from "../../api/nodeUtil";
+import { getBlockInfoFromPos } from "../../api/getBlockInfoFromPos";
+import { blockToNode } from "../../api/nodeConversions/nodeConversions";
+// eslint-disable-next-line import/no-cycle
+import {
+  defaultBlockSchema,
+  defaultInlineContentSchema,
+  defaultStyleSchema,
+} from "../defaultBlocks";
 
 export const headingPropSchema = {
   ...defaultProps,
@@ -128,9 +138,67 @@ const HeadingBlockContent = createStronglyTypedTiptapNode({
       this.options.domAttributes?.inlineContent || {}
     );
   },
+
+  addPasteRules() {
+    return [
+      new PasteRule({
+        find: /.*/g,
+        handler: ({ state, chain, range, pasteEvent }) => {
+          const { node } = getBlockInfoFromPos(
+            state.doc,
+            state.selection.from
+          )!;
+          const id = node.attrs.id;
+          const { posBeforeNode } = getNodeById(id, state.doc);
+
+          const nodeAfter = state.doc.resolve(range.from).nodeAfter;
+          const text =
+            pasteEvent.clipboardData?.getData("text") ||
+            nodeAfter?.textContent ||
+            "";
+          chain().deleteRange({ from: range.from, to: range.to }).run();
+          parseMardown(text, posBeforeNode, this.editor, {
+            state,
+            chain,
+            range,
+          });
+        },
+      }),
+    ];
+  },
 });
 
 export const Heading = createBlockSpecFromStronglyTypedTiptapNode(
   HeadingBlockContent,
   headingPropSchema
 );
+
+const parseMardown = async (
+  content: string,
+  posBeforeNode: number,
+  editor: Editor,
+  props: any
+) => {
+  const { state, range } = props;
+  const blocksToInsert = await markdownToBlocks(
+    content,
+    defaultBlockSchema,
+    defaultInlineContentSchema,
+    defaultStyleSchema,
+    state.schema
+  );
+
+  if (blocksToInsert?.length) {
+    const nodesToInsert = [];
+    for (const blockSpec of blocksToInsert) {
+      nodesToInsert.push(
+        blockToNode(blockSpec as any, editor.schema, defaultStyleSchema)
+      );
+    }
+    if (range.from === range.to) {
+      editor.view.dispatch(
+        editor.state.tr.insert(posBeforeNode, nodesToInsert)
+      );
+    }
+  }
+};

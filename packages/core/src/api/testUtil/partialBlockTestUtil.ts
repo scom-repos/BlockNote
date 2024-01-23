@@ -31,8 +31,11 @@ function textShorthandToStyledText(
 }
 
 function partialContentToInlineContent(
-  content: PartialInlineContent<any, any> | TableContent<any> | undefined
-): InlineContent<any, any>[] | TableContent<any> | undefined {
+  content:
+    | PartialInlineContent<any, any>
+    | TableContent<any, any, any>
+    | undefined
+): InlineContent<any, any>[] | TableContent<any, any, any> | undefined {
   if (typeof content === "string") {
     return textShorthandToStyledText(content);
   }

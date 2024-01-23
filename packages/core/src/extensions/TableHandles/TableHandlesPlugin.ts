@@ -169,6 +169,19 @@ export class TableHandlesView<
         return false;
       }
 
+      if (node.type.name === "table") {
+        const node = this.editor._tiptapEditor.state.doc.resolve(pos).node();
+        block = nodeToBlock(
+          node,
+          this.editor.blockSchema,
+          this.editor.inlineContentSchema,
+          this.editor.styleSchema,
+          this.editor.blockCache
+        );
+        this.tablePos = pos + 1;
+        return false;
+      }
+
       if (node.type.name !== "blockContainer" || node.attrs.id !== blockEl.id) {
         return true;
       }

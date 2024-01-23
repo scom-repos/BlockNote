@@ -14,6 +14,7 @@ import {
   getInlineContentSchemaFromSpecs,
   getStyleSchemaFromSpecs,
 } from "../schema";
+// eslint-disable-next-line import/no-cycle
 import { Heading } from "./HeadingBlockContent/HeadingBlockContent";
 import { Image } from "./ImageBlockContent/ImageBlockContent";
 import { BulletListItem } from "./ListItemBlockContent/BulletListItemBlockContent/BulletListItemBlockContent";

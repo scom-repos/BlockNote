@@ -235,7 +235,7 @@
 }
 
 /* Placeholder styling */
-. .bn-inline-content:before,
+.bn-inline-content:before,
 .bn-is-filter .bn-inline-content:before {
   color: var(--bn-colors-side-menu);
 }
