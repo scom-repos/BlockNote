@@ -358,12 +358,18 @@ export class TableHandlesView<
       const tableElement = document.querySelector(
         `[data-node-type="blockContainer"][data-id="${this.tableId}"] table`
       )!;
-      const cellElement = tableElement.querySelector(
-        `tr:nth-child(${this.state.rowIndex + 1}) > td:nth-child(${
-          this.state.colIndex + 1
-        })`
-      )!;
-
+      const cellElement =
+        this.state.rowIndex === 0
+          ? tableElement.querySelector(
+              `tr:nth-child(${this.state.rowIndex + 1}) > th:nth-child(${
+                this.state.colIndex + 1
+              })`
+            )!
+          : tableElement.querySelector(
+              `tr:nth-child(${this.state.rowIndex + 1}) > td:nth-child(${
+                this.state.colIndex + 1
+              })`
+            )!;
       this.state.referencePosTable = tableElement.getBoundingClientRect();
       this.state.referencePosCell = cellElement.getBoundingClientRect();
       this.updateState();

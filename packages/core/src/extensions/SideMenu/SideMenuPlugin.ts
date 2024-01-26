@@ -457,11 +457,13 @@ export class SideMenuView<
       return;
     }
 
-    this.hoveredBlock = block.node;
+    const outsideTable = block.node.closest(".tableWrapper");
+    const tableContainer = outsideTable?.parentElement;
+    const currentNode = tableContainer || block.node;
+    this.hoveredBlock = currentNode;
 
     // Gets the block's content node, which lets to ignore child blocks when determining the block menu's position.
-    const blockContent = block.node.firstChild as HTMLElement;
-
+    const blockContent = currentNode.firstChild as HTMLElement;
     if (!blockContent) {
       return;
     }
@@ -530,11 +532,15 @@ export class SideMenuView<
 
     const blockContent = this.hoveredBlock!.firstChild! as HTMLElement;
     const blockContentBoundingBox = blockContent.getBoundingClientRect();
+    const isTable = blockContent.querySelector("table");
 
     const pos = this.pmView.posAtCoords({
       left: blockContentBoundingBox.left + blockContentBoundingBox.width / 2,
-      top: blockContentBoundingBox.top + blockContentBoundingBox.height / 2,
+      top: isTable
+        ? blockContentBoundingBox.top + blockContentBoundingBox.height
+        : blockContentBoundingBox.top + blockContentBoundingBox.height / 2,
     });
+
     if (!pos) {
       return;
     }
