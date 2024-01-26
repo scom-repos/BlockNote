@@ -7,7 +7,6 @@ import {
 import { createDefaultBlockDOMOutputSpec } from "../defaultBlockHelpers";
 import { defaultProps } from "../defaultProps";
 import { markdownToBlocks } from "../../api/parsers/markdown/parseMarkdown";
-import { getNodeById } from "../../api/nodeUtil";
 import { getBlockInfoFromPos } from "../../api/getBlockInfoFromPos";
 import { blockToNode } from "../../api/nodeConversions/nodeConversions";
 // eslint-disable-next-line import/no-cycle
@@ -16,6 +15,7 @@ import {
   defaultInlineContentSchema,
   defaultStyleSchema,
 } from "../defaultBlocks";
+import { Fragment, Slice } from "prosemirror-model";
 
 export const headingPropSchema = {
   ...defaultProps,
@@ -148,20 +148,15 @@ const HeadingBlockContent = createStronglyTypedTiptapNode({
             state.doc,
             state.selection.from
           )!;
-          const id = node.attrs.id;
-          const { posBeforeNode } = getNodeById(id, state.doc);
-
-          const nodeAfter = state.doc.resolve(range.from).nodeAfter;
-          const text =
-            pasteEvent.clipboardData?.getData("text") ||
-            nodeAfter?.textContent ||
-            "";
-          chain().deleteRange({ from: range.from, to: range.to }).run();
-          parseMardown(text, posBeforeNode, this.editor, {
-            state,
-            chain,
-            range,
-          });
+          const text = pasteEvent.clipboardData?.getData("text") || "";
+          if (text) {
+            parseMardown(text, this.editor, {
+              state,
+              chain,
+              range,
+              node,
+            });
+          }
         },
       }),
     ];
@@ -173,12 +168,7 @@ export const Heading = createBlockSpecFromStronglyTypedTiptapNode(
   headingPropSchema
 );
 
-const parseMardown = async (
-  content: string,
-  posBeforeNode: number,
-  editor: Editor,
-  props: any
-) => {
+const parseMardown = async (content: string, editor: Editor, props: any) => {
   const { state, range } = props;
   const blocksToInsert = await markdownToBlocks(
     content,
@@ -195,9 +185,10 @@ const parseMardown = async (
         blockToNode(blockSpec as any, editor.schema, defaultStyleSchema)
       );
     }
-    if (range.from === range.to) {
+    if (range.from !== range.to) {
+      const slice = new Slice(Fragment.from(nodesToInsert), 0, 0);
       editor.view.dispatch(
-        editor.state.tr.insert(posBeforeNode, nodesToInsert)
+        editor.state.tr.replaceRange(range.from, range.to, slice)
       );
     }
   }

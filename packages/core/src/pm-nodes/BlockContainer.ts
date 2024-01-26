@@ -642,7 +642,6 @@ export const BlockContainer = Node.create<{
             if (selectionAtBlockStart && selectionEmpty && blockEmpty) {
               const newBlockInsertionPos = endPos + 1;
               const newBlockContentPos = newBlockInsertionPos + 2;
-
               chain()
                 .BNCreateBlock(newBlockInsertionPos)
                 .setTextSelection(newBlockContentPos)
@@ -687,6 +686,20 @@ export const BlockContainer = Node.create<{
       // editor since the browser will try to use tab for keyboard navigation.
       Tab: () => {
         this.editor.commands.sinkListItem("blockContainer");
+        const currentEl = this.editor.view.domAtPos(
+          this.editor.state.selection.from
+        ).node as Element;
+        if (currentEl.closest("table")) {
+          if (this.editor.commands.goToNextCell()) {
+            return true;
+          }
+
+          if (!this.editor.can().addRowAfter()) {
+            return false;
+          }
+
+          return this.editor.chain().addRowAfter().goToNextCell().run();
+        }
         return true;
       },
       "Shift-Tab": () => {

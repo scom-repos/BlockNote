@@ -169,7 +169,8 @@ export function tableContentToNodes<
 ): Node[] {
   const rowNodes: Node[] = [];
 
-  for (const row of tableContent.rows) {
+  for (let i = 0; i < tableContent.rows.length; i++) {
+    const row = tableContent.rows[i];
     const columnNodes: Node[] = [];
     for (const cell of row.cells) {
       let pNode: Node;
@@ -199,7 +200,12 @@ export function tableContentToNodes<
         pNode = schema.nodes["tableParagraph"].create({}, nodes);
       }
 
-      const cellNode = schema.nodes["tableCell"].create({}, pNode);
+      let cellNode;
+      if (i === 0) {
+        cellNode = schema.nodes["tableHeader"].create({}, pNode);
+      } else {
+        cellNode = schema.nodes["tableCell"].create({}, pNode);
+      }
       columnNodes.push(cellNode);
     }
     const rowNode = schema.nodes["tableRow"].create({}, columnNodes);

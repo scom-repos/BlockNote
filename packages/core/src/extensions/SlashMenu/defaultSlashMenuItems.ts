@@ -211,6 +211,28 @@ export const getDefaultSlashMenuItems = <
                   ],
                 ],
               },
+              {
+                cells: [
+                  [
+                    {
+                      type: "paragraph",
+                      content: [{ type: "text", text: "", styles: {} }],
+                    },
+                  ],
+                  [
+                    {
+                      type: "paragraph",
+                      content: [{ type: "text", text: "", styles: {} }],
+                    },
+                  ],
+                  [
+                    {
+                      type: "paragraph",
+                      content: [{ type: "text", text: "", styles: {} }],
+                    },
+                  ],
+                ],
+              },
             ],
           },
         } as PartialBlock<BSchema, I, S>);

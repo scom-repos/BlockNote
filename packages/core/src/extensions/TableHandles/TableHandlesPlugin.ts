@@ -14,6 +14,7 @@ import {
   StyleSchema,
 } from "../../schema";
 import { getDraggableBlockFromCoords } from "../SideMenu/SideMenuPlugin";
+import { findParentNodeClosestToPos } from "@tiptap/core";
 
 let dragImageElement: HTMLElement | undefined;
 
@@ -148,7 +149,6 @@ export class TableHandlesView<
         "Found table cell element, but could not find surrounding blockContent element."
       );
     }
-    this.tableId = blockEl.id;
 
     if (
       this.state !== undefined &&
@@ -169,19 +169,6 @@ export class TableHandlesView<
         return false;
       }
 
-      if (node.type.name === "table") {
-        const node = this.editor._tiptapEditor.state.doc.resolve(pos).node();
-        block = nodeToBlock(
-          node,
-          this.editor.blockSchema,
-          this.editor.inlineContentSchema,
-          this.editor.styleSchema,
-          this.editor.blockCache
-        );
-        this.tablePos = pos + 1;
-        return false;
-      }
-
       if (node.type.name !== "blockContainer" || node.attrs.id !== blockEl.id) {
         return true;
       }
@@ -197,6 +184,29 @@ export class TableHandlesView<
 
       return false;
     });
+
+    if (block && block["type"] !== "table" && this.tablePos) {
+      const resolvePos = this.pmView.state.doc.resolve(this.tablePos);
+      const tableNode = findParentNodeClosestToPos(resolvePos, (node) => {
+        return node.type.name === "table";
+      });
+      if (tableNode) {
+        const containerNode = this.pmView.state.doc
+          .resolve(tableNode.pos)
+          .node();
+        if (containerNode) {
+          block = nodeToBlock(
+            containerNode,
+            this.editor.blockSchema,
+            this.editor.inlineContentSchema,
+            this.editor.styleSchema,
+            this.editor.blockCache
+          );
+          this.tablePos = tableNode.pos + 1;
+          this.tableId = block.id;
+        }
+      }
+    }
 
     this.state = {
       show: true,
