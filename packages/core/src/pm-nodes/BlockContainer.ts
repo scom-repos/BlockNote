@@ -666,6 +666,14 @@ export const BlockContainer = Node.create<{
             const blockEmpty = node.textContent.length === 0;
 
             if (!blockEmpty) {
+              // const currentEl = this.editor.view.domAtPos(
+              //   this.editor.state.selection.from
+              // ).node as Element;
+
+              // if (currentEl.closest("table")) {
+              //   console.log("set break");
+              //   chain().setHardBreak().run();
+              // }
               chain()
                 .deleteSelection()
                 .BNSplitBlock(state.selection.from, selectionAtBlockStart)
@@ -685,10 +693,11 @@ export const BlockContainer = Node.create<{
       // Always returning true for tab key presses ensures they're not captured by the browser. Otherwise, they blur the
       // editor since the browser will try to use tab for keyboard navigation.
       Tab: () => {
-        this.editor.commands.sinkListItem("blockContainer");
+        // this.editor.commands.sinkListItem("blockContainer");
         const currentEl = this.editor.view.domAtPos(
           this.editor.state.selection.from
         ).node as Element;
+
         if (currentEl.closest("table")) {
           if (this.editor.commands.goToNextCell()) {
             return true;
@@ -699,6 +708,8 @@ export const BlockContainer = Node.create<{
           }
 
           return this.editor.chain().addRowAfter().goToNextCell().run();
+        } else {
+          this.editor.commands.sinkListItem("blockContainer");
         }
         return true;
       },

@@ -16,12 +16,6 @@ export function App() {
       editor.topLevelBlocks.pop();
       const md = await editor.blocksToMarkdownLossy(editor.topLevelBlocks);
       console.log("mardown", { value: md });
-      // console.log(
-      //   "MAD BLOCKS",
-      //   await editor.tryParseMarkdownToBlocks(
-      //     "|                   |   |   |\n| ----------------- | - | - |\n| 1                 | 1 | 1 |\n| 1.  1\n2.  3\n3.  4 |   |   |\n"
-      //   )
-      // );
     },
     uploadFile: uploadToTmpFilesDotOrg_DEV_ONLY,
   });

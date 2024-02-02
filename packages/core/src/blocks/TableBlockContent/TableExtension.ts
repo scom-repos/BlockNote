@@ -16,6 +16,17 @@ export const TableExtension = Extension.create({
 
   addKeyboardShortcuts() {
     return {
+      // Enter: () => {
+      //   const currentEl = this.editor.view.domAtPos(
+      //     this.editor.state.selection.from
+      //   ).node as Element;
+
+      //   if (currentEl.closest("table")) {
+      //     this.editor.commands.setHardBreak();
+      //     return true;
+      //   }
+      //   return false;
+      // },
       // Ensures that backspace won't delete the table if the text cursor is at
       // the start of a cell and the selection is empty.
       Backspace: () => {
