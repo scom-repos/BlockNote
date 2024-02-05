@@ -30,6 +30,10 @@ export function removeUnderlines() {
             numChildElements--;
             i--;
           }
+        } else if ((node as HASTElement).tagName === "br") {
+          tree.children.splice(i, 1, { type: "text", value: "<br>" });
+          numChildElements--;
+          i--;
         }
       }
     }

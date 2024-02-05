@@ -18,11 +18,17 @@ export function cleanHTMLToMarkdown(cleanHTMLString: string) {
   const markdownString = unified()
     .use(rehypeParse, { fragment: true })
     .use(removeUnderlines)
-    .use(rehypeRemark)
+    .use(rehypeRemark, { newlines: true })
     .use(remarkGfm)
     .use(remarkStringify)
     .processSync(cleanHTMLString);
 
+  if (markdownString.value) {
+    markdownString.value = (markdownString.value as string).replace(
+      /\\<br>/g,
+      "\n"
+    );
+  }
   return markdownString.value as string;
 }
 

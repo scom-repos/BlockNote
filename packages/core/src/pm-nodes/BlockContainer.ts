@@ -666,19 +666,18 @@ export const BlockContainer = Node.create<{
             const blockEmpty = node.textContent.length === 0;
 
             if (!blockEmpty) {
-              // const currentEl = this.editor.view.domAtPos(
-              //   this.editor.state.selection.from
-              // ).node as Element;
+              const currentEl = this.editor.view.domAtPos(
+                this.editor.state.selection.from
+              ).node as Element;
 
-              // if (currentEl.closest("table")) {
-              //   console.log("set break");
-              //   chain().setHardBreak().run();
-              // }
-              chain()
-                .deleteSelection()
-                .BNSplitBlock(state.selection.from, selectionAtBlockStart)
-                .run();
-
+              if (currentEl.closest("table")) {
+                chain().deleteSelection().setHardBreak().run();
+              } else {
+                chain()
+                  .deleteSelection()
+                  .BNSplitBlock(state.selection.from, selectionAtBlockStart)
+                  .run();
+              }
               return true;
             }
 

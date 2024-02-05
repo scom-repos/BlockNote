@@ -19,10 +19,22 @@ export const handleEnter = (editor: Editor) => {
       // Changes list item block to a text block if the content is empty.
       commands.command(() => {
         if (node.textContent.length === 0) {
-          return commands.BNUpdateBlock(state.selection.from, {
-            type: "paragraph",
-            props: {},
-          });
+          const currentEl = editor.view.domAtPos(editor.state.selection.from)
+            .node as Element;
+          if (currentEl.closest("table")) {
+            return chain()
+              .setHardBreak()
+              .BNUpdateBlock(state.selection.from, {
+                type: "paragraph",
+                props: {},
+              })
+              .run();
+          } else {
+            return commands.BNUpdateBlock(state.selection.from, {
+              type: "paragraph",
+              props: {},
+            });
+          }
         }
 
         return false;
