@@ -716,10 +716,6 @@ export const BlockContainer = Node.create<{
         this.editor.commands.liftListItem("blockContainer");
         return true;
       },
-      "Mod-Alt-0": () =>
-        this.editor.commands.BNCreateBlock(
-          this.editor.state.selection.anchor + 2
-        ),
     };
   },
 });
