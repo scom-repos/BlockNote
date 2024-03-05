@@ -19,7 +19,7 @@ import { Fragment, Slice } from "prosemirror-model";
 
 export const headingPropSchema = {
   ...defaultProps,
-  level: { default: 1, values: [1, 2, 3] as const },
+  level: { default: 1, values: [1, 2, 3, 4, 5, 6] as const },
 } satisfies PropSchema;
 
 const HeadingBlockContent = createStronglyTypedTiptapNode({
@@ -50,7 +50,7 @@ const HeadingBlockContent = createStronglyTypedTiptapNode({
 
   addInputRules() {
     return [
-      ...[1, 2, 3].map((level) => {
+      ...[1, 2, 3, 4, 5, 6].map((level) => {
         // Creates a heading of appropriate level when starting with "#", "##", or "###".
         return new InputRule({
           find: new RegExp(`^(#{${level}})\\s$`),
@@ -93,6 +93,27 @@ const HeadingBlockContent = createStronglyTypedTiptapNode({
             level: 3 as any,
           },
         }),
+      "Mod-Alt-4": () =>
+        this.editor.commands.BNUpdateBlock(this.editor.state.selection.anchor, {
+          type: "heading",
+          props: {
+            level: 4 as any,
+          },
+        }),
+      "Mod-Alt-5": () =>
+        this.editor.commands.BNUpdateBlock(this.editor.state.selection.anchor, {
+          type: "heading",
+          props: {
+            level: 5 as any,
+          },
+        }),
+      "Mod-Alt-6": () =>
+        this.editor.commands.BNUpdateBlock(this.editor.state.selection.anchor, {
+          type: "heading",
+          props: {
+            level: 6 as any,
+          },
+        }),
     };
   },
   parseHTML() {
@@ -122,6 +143,21 @@ const HeadingBlockContent = createStronglyTypedTiptapNode({
       {
         tag: "h3",
         attrs: { level: 3 },
+        node: "heading",
+      },
+      {
+        tag: "h4",
+        attrs: { level: 4 },
+        node: "heading",
+      },
+      {
+        tag: "h5",
+        attrs: { level: 5 },
+        node: "heading",
+      },
+      {
+        tag: "h6",
+        attrs: { level: 6 },
         node: "heading",
       },
     ];

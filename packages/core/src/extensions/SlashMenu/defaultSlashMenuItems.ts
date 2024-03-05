@@ -122,6 +122,42 @@ export const getDefaultSlashMenuItems = <
           } as PartialBlock<BSchema, I, S>),
       });
     }
+
+    if (schema.heading.propSchema.level.values?.includes(4)) {
+      slashMenuItems.push({
+        name: "Heading 4",
+        aliases: ["h4", "heading4", "subheading"],
+        execute: (editor) =>
+          insertOrUpdateBlock(editor, {
+            type: "heading",
+            props: { level: 4 },
+          } as PartialBlock<BSchema, I, S>),
+      });
+    }
+
+    if (schema.heading.propSchema.level.values?.includes(5)) {
+      slashMenuItems.push({
+        name: "Heading 5",
+        aliases: ["h5", "heading5", "subheading"],
+        execute: (editor) =>
+          insertOrUpdateBlock(editor, {
+            type: "heading",
+            props: { level: 5 },
+          } as PartialBlock<BSchema, I, S>),
+      });
+    }
+
+    if (schema.heading.propSchema.level.values?.includes(6)) {
+      slashMenuItems.push({
+        name: "Heading 6",
+        aliases: ["h6", "heading6", "subheading"],
+        execute: (editor) =>
+          insertOrUpdateBlock(editor, {
+            type: "heading",
+            props: { level: 6 },
+          } as PartialBlock<BSchema, I, S>),
+      });
+    }
   }
 
   if ("bulletListItem" in schema) {
