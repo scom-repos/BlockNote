@@ -1,7 +1,6 @@
 import {
   findParentNodeClosestToPos,
   KeyboardShortcutCommand,
-  mergeAttributes,
   Node,
 } from "@tiptap/core";
 import { TableCell } from "@tiptap/extension-table-cell";
@@ -21,6 +20,7 @@ import {
   deleteTable,
   goToNextCell,
 } from "prosemirror-tables";
+import { mergeCSSClasses } from "../../util/browser";
 
 export const tablePropSchema = {
   ...defaultProps,
@@ -109,15 +109,29 @@ const TableParagraph = Node.create({
   content: "blockContainer+",
 
   parseHTML() {
-    return [{ tag: "div" }];
+    return [{ tag: "div[data-node-type=" + this.name + "]" }];
   },
 
   renderHTML({ HTMLAttributes }) {
-    return [
-      "div",
-      mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
-      0,
-    ];
+    const blockGroupHTMLAttributes = {
+      ...(this.options.domAttributes?.blockGroup || {}),
+      ...HTMLAttributes,
+    };
+    const blockGroup = document.createElement("div");
+    blockGroup.className = mergeCSSClasses(
+      "bn-block-table-paragraph",
+      blockGroupHTMLAttributes.class
+    );
+    blockGroup.setAttribute("data-node-type", "tableParagraph");
+    for (const [attribute, value] of Object.entries(blockGroupHTMLAttributes)) {
+      if (attribute !== "class") {
+        blockGroup.setAttribute(attribute, value as string);
+      }
+    }
+    return {
+      dom: blockGroup,
+      contentDOM: blockGroup,
+    };
   },
 });
 

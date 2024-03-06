@@ -59,7 +59,6 @@ export function simplifyBlocks(options: SimplifyBlocksOptions) {
             }
           }
         }
-        continue;
       }
 
       const blockGroup =

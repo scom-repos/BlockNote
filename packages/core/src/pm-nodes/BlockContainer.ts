@@ -67,7 +67,7 @@ export const BlockContainer = Node.create<{
   name: "blockContainer",
   group: "blockContainer",
   // A block always contains content, and optionally a blockGroup which contains nested blocks
-  content: "(blockContent blockGroup?) | tableContent",
+  content: "blockContent blockGroup?",
   // Ensures content-specific keyboard handlers trigger first.
   priority: 50,
   defining: true,
