@@ -3,6 +3,8 @@ import rehypeParse from "rehype-parse";
 import rehypeRemark from "rehype-remark";
 import remarkGfm from "remark-gfm";
 import remarkStringify from "remark-stringify";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { toHtml } from "hast-util-to-html";
 import { unified } from "unified";
 import type { BlockNoteEditor } from "../../../editor/BlockNoteEditor";
 import {
@@ -18,7 +20,20 @@ export function cleanHTMLToMarkdown(cleanHTMLString: string) {
   const markdownString = unified()
     .use(rehypeParse, { fragment: true })
     .use(removeUnderlines)
-    .use(rehypeRemark, { newlines: true })
+    .use(rehypeRemark, {
+      newlines: true,
+      handlers: {
+        span: (state, node) => {
+          /** @type {Html} */
+          const result: any = {
+            type: "html",
+            value: toHtml(node),
+          };
+          state(node, result);
+          return result;
+        },
+      },
+    })
     .use(remarkGfm)
     .use(remarkStringify)
     .processSync(cleanHTMLString);

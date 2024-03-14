@@ -66,12 +66,13 @@ export function markdownToBlocks<
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkRehype, {
+      allowDangerousHtml: true,
       handlers: {
         ...(defaultHandlers as any),
         code,
       },
     })
-    .use(rehypeStringify)
+    .use(rehypeStringify, { allowDangerousHtml: true })
     .processSync(markdown);
 
   return HTMLToBlocks(

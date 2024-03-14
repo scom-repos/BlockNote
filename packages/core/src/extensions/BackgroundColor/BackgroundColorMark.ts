@@ -38,7 +38,12 @@ const BackgroundColorMark = Mark.create({
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ["span", HTMLAttributes, 0];
+    const { "data-background-color": stringValue = "" } = HTMLAttributes;
+    return [
+      "span",
+      { ...HTMLAttributes, style: `background-color: ${stringValue};` },
+      0,
+    ];
   },
 });
 

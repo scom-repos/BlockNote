@@ -36,7 +36,8 @@ const TextColorMark = Mark.create({
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ["span", HTMLAttributes, 0];
+    const { "data-text-color": stringValue = "" } = HTMLAttributes;
+    return ["span", { ...HTMLAttributes, style: `color: ${stringValue};` }, 0];
   },
 });
 
