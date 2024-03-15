@@ -1,0 +1,37 @@
+version: "3"
+services:
+  install:
+    user: node
+    image: node:18
+    volumes:
+      - .:/app
+    command: bash -c "cd /app/packages/core && rm -rf node_modules && rm -f package-lock.json && npm i && cd ../../packages/react && rm -rf node_modules && rm -f package-lock.json && npm i"
+  build:
+    user: node
+    image: node:18
+    volumes:
+      - .:/app
+    command: bash -c "cd /app/packages/core && npm run build-bundled"
+  installTest:
+    user: node
+    image: node:18
+    volumes:
+      - .:/app
+    command: bash -c "cd /app/examples/editor && rm -rf node_modules && rm -f package-lock.json && npm i"
+  test:
+    user: node
+    image: node:18
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+    command: bash -c "cd /app/examples/editor && npm run dev"
+  dev:
+    #docker-compose run --rm dev bash
+    user: node
+    image: node:18
+    working_dir: /app
+    volumes:
+      - .:/app
+    tty: true
+    stdin_open: true

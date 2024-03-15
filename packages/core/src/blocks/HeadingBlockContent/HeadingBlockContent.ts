@@ -184,7 +184,7 @@ const HeadingBlockContent = createStronglyTypedTiptapNode({
             state.doc,
             state.selection.from
           )!;
-          const text = pasteEvent.clipboardData?.getData("text") || "";
+          const text = pasteEvent?.clipboardData?.getData("text") || "";
           if (text) {
             parseMardown(text, this.editor, {
               state,

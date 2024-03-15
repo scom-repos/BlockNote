@@ -5,6 +5,9 @@ import { defineConfig } from "vite";
 // import eslintPlugin from "vite-plugin-eslint";
 // https://vitejs.dev/config/
 export default defineConfig((conf) => ({
+  server: {
+    host: true,
+  },
   plugins: [react(), webpackStats()],
   optimizeDeps: {
     // link: ['vite-react-ts-components'],
