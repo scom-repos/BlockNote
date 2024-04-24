@@ -167,7 +167,11 @@ export function wrapInBlockStructure<
   // which are already added as HTML attributes to the parent `blockContent`
   // element (inheritedProps) and props set to their default values.
   for (const [prop, value] of Object.entries(blockProps)) {
-    if (!inheritedProps.includes(prop) && value !== propSchema[prop].default) {
+    if (
+      !inheritedProps.includes(prop) &&
+      propSchema[prop]?.default &&
+      value !== propSchema[prop].default
+    ) {
       blockContent.setAttribute(camelToDataKebab(prop), value);
     }
   }

@@ -25,6 +25,7 @@ function setSelectionToNextContentEditableBlock<
 
   while (contentType === "none") {
     block = editor.getTextCursorPosition().nextBlock!;
+    if (!block) break;
     contentType = editor.blockSchema[block.type].content as
       | "inline"
       | "table"

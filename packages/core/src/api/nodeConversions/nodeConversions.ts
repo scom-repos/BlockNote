@@ -174,6 +174,7 @@ export function tableContentToNodes<
     const columnNodes: Node[] = [];
     for (const cell of row.cells) {
       let pNode: Node;
+      let cellAttrs: Record<string, any> = {};
       if (!cell) {
         const contentNode = schema.nodes["paragraph"].create({});
         const containerNode = schema.nodes["blockContainer"].create(
@@ -197,14 +198,17 @@ export function tableContentToNodes<
           const node = blockToNode(content, schema, styleSchema);
           nodes.push(node);
         }
-        pNode = schema.nodes["tableParagraph"].create({}, nodes);
+        const firstItem = cell[0];
+        const { colspan, rowspan, colwidth } = firstItem?.props ?? {};
+        cellAttrs = { colspan, rowspan, colwidth };
+        pNode = schema.nodes["tableParagraph"].create(cellAttrs, nodes);
       }
 
       let cellNode;
       if (i === 0) {
-        cellNode = schema.nodes["tableHeader"].create({}, pNode);
+        cellNode = schema.nodes["tableHeader"].create(cellAttrs, pNode);
       } else {
-        cellNode = schema.nodes["tableCell"].create({}, pNode);
+        cellNode = schema.nodes["tableCell"].create(cellAttrs, pNode);
       }
       columnNodes.push(cellNode);
     }
@@ -317,6 +321,7 @@ function contentNodeToTableContent<
     rowNode.content.forEach((cellNode) => {
       if (cellNode?.content) {
         const contentBlocks: any = [];
+        const cellAttrs = cellNode.attrs;
         cellNode.content.forEach((node) => {
           node.content.forEach((childNode) => {
             const block = nodeToBlock(
@@ -326,19 +331,12 @@ function contentNodeToTableContent<
               styleSchema,
               blockCache
             );
+            block.props = { ...block.props, ...cellAttrs };
             contentBlocks.push(block);
           });
         });
         row.cells.push(contentBlocks);
       }
-
-      // row.cells.push(
-      //   contentNodeToInlineContent(
-      //     cellNode.firstChild!,
-      //     inlineContentSchema,
-      //     styleSchema
-      //   )
-      // );
     });
 
     ret.rows.push(row);

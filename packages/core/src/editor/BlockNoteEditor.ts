@@ -661,7 +661,7 @@ export class BlockNoteEditor<
     targetBlock: BlockIdentifier,
     placement: "start" | "end" = "start"
   ) {
-    const id = typeof targetBlock === "string" ? targetBlock : targetBlock.id;
+    const id = typeof targetBlock === "string" ? targetBlock : targetBlock?.id;
 
     const { posBeforeNode } = getNodeById(id, this._tiptapEditor.state.doc);
     const { startPos, contentNode } = getBlockInfoFromPos(
