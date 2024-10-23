@@ -19,9 +19,12 @@ import {
   CanCommands,
   ChainedCommands,
   ExtendedRegExpMatchArray,
+  InputRuleFinder,
+  nodeInputRule,
   PasteRule,
   PasteRuleFinder,
   SingleCommands,
+  textblockTypeInputRule,
 } from "@tiptap/core";
 import { EditorState } from "prosemirror-state";
 
@@ -42,6 +45,11 @@ type PasteRuleConfig = {
     range: Range;
     state: EditorState;
   }) => void | null;
+};
+
+type InputRuleConfig = {
+  find: InputRuleFinder;
+  getAttributes: (match: ExtendedRegExpMatchArray) => Record<string, any>;
 };
 
 export type CustomBlockImplementation<
@@ -86,6 +94,8 @@ export type CustomBlockImplementation<
   parseFn?: () => any[];
 
   pasteRules?: PasteRuleConfig[];
+
+  inputRules?: InputRuleConfig[];
 };
 
 // Function that uses the 'parse' function of a blockConfig to create a
@@ -213,6 +223,27 @@ export function createBlockSpec<
           handler(props: any) {
             rule.handler(props);
           },
+        });
+      });
+    },
+
+    addInputRules() {
+      if (!blockImplementation.inputRules) {
+        return [];
+      }
+      return blockImplementation.inputRules.map((rule) => {
+        console.log("====", this.type);
+        if (this.type.isBlock) {
+          return nodeInputRule({
+            find: rule.find,
+            type: this.type,
+            getAttributes: rule.getAttributes,
+          });
+        }
+        return textblockTypeInputRule({
+          find: rule.find,
+          type: this.type,
+          getAttributes: rule.getAttributes,
         });
       });
     },
