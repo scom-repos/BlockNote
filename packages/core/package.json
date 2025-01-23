@@ -88,7 +88,8 @@
     "uuid": "^8.3.2",
     "y-prosemirror": "1.2.1",
     "y-protocols": "^1.0.5",
-    "yjs": "^13.6.1"
+    "yjs": "^13.6.1",
+    "esbuild": "^0.24.2"
   },
   "devDependencies": {
     "@types/hast": "^2.3.4",
